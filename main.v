@@ -2,7 +2,6 @@ module main
 
 import vsl.vcl
 import os
-import net.http
 import irishgreencitrus.raylibv as r
 
 const how_many = 4096
@@ -39,7 +38,7 @@ fn main() {
 		panic(err)
 	}
 	params := [f64(0.001), 9.81, 4096.000]
-	params_ := []f64{cap: 3, len: 3, init: params[it]}
+	params_ := []f64{len: 3, cap: 3, init: params[it]}
 	mut params_buf := device.vector[f64](how_many)?
 	err = <-params_buf.load(params_)
 	if err !is none {
@@ -55,13 +54,16 @@ fn main() {
 	for i := 0; i < how_many; i++ {
 		c << random_color()
 	}
-	shared planets_struct := Planets{
+	shared planets_struct := Planets_colors{
 		planets_data: planets
-		kernel: k
 		colors: c
 		run: true
+	}
+	mut planets_kernel_buff := Planets_kernel{
+		kernel: k
 		cl_vector1: planet_buf1
 		cl_vector2: planet_buf2
 	}
+	spawn simulate(shared planets_struct, mut &planets_kernel_buff)
 	start(shared planets_struct)
 }

@@ -50,3 +50,4 @@ __kernel void updatePlanet(__global const Planet* inputPlanets, __global Planet*
     outputPlanets[i].position = position_i;
     outputPlanets[i].acceleration = acceleration;
 }
+
