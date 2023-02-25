@@ -4,7 +4,7 @@ import vsl.vcl
 import os
 import irishgreencitrus.raylibv as r
 
-const how_many = 4096
+const how_many = 1024
 
 fn main() {
 	// Set up VCL
@@ -37,10 +37,9 @@ fn main() {
 	if err !is none {
 		panic(err)
 	}
-	params := [f64(0.001), 9.81, 4096.000]
-	params_ := []f64{len: 3, cap: 3, init: params[it]}
-	mut params_buf := device.vector[f64](how_many)?
-	err = <-params_buf.load(params_)
+	params := [f64(0.5), 9.81, how_many]
+	mut params_buf := device.vector[f64](3)?
+	err = <-params_buf.load(params)
 	if err !is none {
 		panic(err)
 	}
@@ -64,6 +63,6 @@ fn main() {
 		cl_vector1: planet_buf1
 		cl_vector2: planet_buf2
 	}
-	spawn simulate(shared planets_struct, mut &planets_kernel_buff)
+	spawn simulate(shared planets_struct, mut &planets_kernel_buff, mut params_buf)
 	start(shared planets_struct)
 }

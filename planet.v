@@ -4,13 +4,17 @@ import vsl.vcl
 import irishgreencitrus.raylibv as r
 
 // Define Planet struct
+[packed]
 struct Planet {
-	position     [3]f64 // position of the planet in all three directions
-	velocity     [3]f64 // velocity of the planet in all three directions
-	acceleration [3]f64 // acceleration of the planet in all three directions
-	radius       f64    // radius of the planet
-	density      f64    // density of the planet
-	mass         f64    // mass of the planet
+	x       f64
+	y       f64
+	z       f64
+	vx      f64
+	vy      f64
+	vz      f64
+	radius  f64
+	density f64
+	mass    f64
 }
 
 struct Planets_colors {
