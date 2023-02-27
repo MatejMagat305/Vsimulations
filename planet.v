@@ -1,7 +1,7 @@
 module main
 
-import vsl.vcl
-import irishgreencitrus.raylibv as r
+import rand
+import math
 
 // Define Planet struct
 [packed]
@@ -16,17 +16,16 @@ struct Planet {
 	density f64
 	mass    f64
 }
-
-struct Planets_colors {
-	colors []r.Color
-mut:
-	planets_data []Planet
-	run          bool
-}
-
-struct Planets_kernel {
-	kernel &vcl.Kernel
-mut:
-	cl_vector1 &vcl.Vector[Planet]
-	cl_vector2 &vcl.Vector[Planet]
+fn random_planet() Planet {
+	radius := rand.f64()*2+1
+	mass := rand.f64()*2+2
+	density := mass / (4.0/3.0 * 3.141592653589793 * math.powf(f32(radius), 3))
+	return Planet{
+		10 * (rand.f64() * screen_width / 2 - screen_width / 4),
+		10 * (rand.f64() * screen_height / 2 - screen_height / 4),
+		10 * (rand.f64() * screen_width / 2 - screen_width / 4),
+		//rand.f64()*0.2-0.1,rand.f64()*0.2-0.1,rand.f64()*0.2-0.1,
+		0,0,0,
+		radius, density, mass
+	}
 }
