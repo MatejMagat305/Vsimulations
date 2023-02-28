@@ -5,4 +5,7 @@ It is be euler method with step 0.5 (big step for see dynamic) and 128 planets (
 
 This project uses https://github.com/vlang/vsl and https://github.com/irishgreencitrus/raylib.v
 Many thanks to @raysan5 for the amazing Raylib, and to @irishgreencitrus for his excellent V wrapper. <br>
-Mainly thank to @ ulises-jeremias for excelent work on OpenCL wrapper.
+Mainly thank to @ulises-jeremias for excelent work on OpenCL wrapper.
+
+## video:
+https://www.youtube.com/watch?v=P86lRASXuH0
