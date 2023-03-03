@@ -3,6 +3,7 @@ module main
 import time
 import vsl.vcl
 import os
+
 fn start_simulate(ch chan []Planet, stop chan bool) {
 	mut planets := []Planet{cap: how_many}
 	for i := 0; i < how_many; i++ {
@@ -29,22 +30,24 @@ fn start_simulate(ch chan []Planet, stop chan bool) {
 	if err !is none { panic(err) }
 	err = <-planet_vector2.load(planets)
 	if err !is none { panic(err)	}
-	params := [f64(0.1), 9.81, how_many]
-	mut params_buf := device.vector[f64](3) or { return }
+	params := [f64(0.01), 9.81, how_many, 850]
+	mut params_buf := device.vector[f64](4) or { return }
 	err = <-params_buf.load(params)
 	if err !is none { panic(err) }
 	// load kernel
-	mut kernel_string := os.read_file(os.join_path(os.dir(@FILE), 'kernel.cl')) or { return }
+	mut kernel_string := os.read_file(os.join_path(os.dir(@FILE), name_kernel_file)) or { return }
 	// Add program source to device and create kernel
-	device.add_program(kernel_string) or { return }
+	device.add_program(kernel_string) or {
+		println(err.str())
+		exit(11) }
 	mut kernel := device.kernel('updatePlanet') or { return }
 
 	// start loop
 	mut t := time.now()
 	kernel_params := kernel.global(how_many).local(1)
 	buf1, buf2 := planet_vector1.buffer(), planet_vector2.buffer()
-	for {
 
+	for {
 		if time.since(t).milliseconds() > time.second.milliseconds() / 4 {
 			ch <- planet_vector1.data() or {
 				println(err)
