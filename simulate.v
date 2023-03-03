@@ -16,18 +16,18 @@ fn start_simulate(ch chan []Planet, stop chan bool) {
 	}
 
 	// Create buffers for planets on the device
-	mut planet_buf1 := device.vector[Planet](how_many) or { return }
-	mut planet_buf2 := device.vector[Planet](how_many) or { return }
+	mut planet_vector1 := device.vector[Planet](how_many) or { return }
+	mut planet_vector2 := device.vector[Planet](how_many) or { return }
 	defer {
-		planet_buf1.release() or { panic(err) }
+		planet_vector1.release() or { panic(err) }
 	}
 	defer {
-		planet_buf2.release() or { panic(err) }
+		planet_vector2.release() or { panic(err) }
 	}
 	// Load planet data to the device buffers
-	mut err := <-planet_buf1.load(planets)
+	mut err := <-planet_vector1.load(planets)
 	if err !is none { panic(err) }
-	err = <-planet_buf2.load(planets)
+	err = <-planet_vector2.load(planets)
 	if err !is none { panic(err)	}
 	params := [f64(0.1), 9.81, how_many]
 	mut params_buf := device.vector[f64](3) or { return }
@@ -41,20 +41,23 @@ fn start_simulate(ch chan []Planet, stop chan bool) {
 
 	// start loop
 	mut t := time.now()
+	kernel_params := kernel.global(how_many).local(1)
+	buf1, buf2 := planet_vector1.buffer(), planet_vector2.buffer()
 	for {
+
 		if time.since(t).milliseconds() > time.second.milliseconds() / 4 {
-			ch <- planet_buf1.data() or {
+			ch <- planet_vector1.data() or {
 				println(err)
 				planets
 			}
 			t = time.now()
 		}
-		mut kernel_err := <- kernel.global(how_many).local(1).run(planet_buf1.buffer(),	planet_buf2.buffer(), params_buf)
+		mut kernel_err := <- kernel_params.run(buf1,	buf2, params_buf)
 		if kernel_err !is none {
 			println(kernel_err.str())
 			break
 		}
-		kernel_err = <- kernel.global(how_many).local(1).run(planet_buf2.buffer(), planet_buf1.buffer(), params_buf)
+		kernel_err = <- kernel_params.run(buf2, buf1, params_buf)
 		if kernel_err !is none {
 			println(kernel_err.str())
 			break
