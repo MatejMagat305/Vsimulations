@@ -9,3 +9,6 @@ Mainly thank to @ulises-jeremias for excelent work on OpenCL wrapper.
 
 ## video:
 https://www.youtube.com/watch?v=P86lRASXuH0
+
+## NOTE:
+if you know how make kernel more eficient please make pull request
